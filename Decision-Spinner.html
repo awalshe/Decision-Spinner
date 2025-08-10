@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Decision Spinner: Beat Free Time Paralysis!</title>
 <style>
   :root{
@@ -349,104 +350,219 @@
   .help{
     margin-top: 10px; font-size: 12px; line-height:1.35; color: var(--muted);
   }
+
+/* Smaller header */
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+/* Minimisable panel */
+.panel.minimised .panel-content {
+  display: none;
+}
+.panel-toggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+/* Smaller Add buttons */
+.btn.small {
+  padding: 6px 10px;
+  font-size: 13px;
+  height: 38px; /* Match input height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Panel collapse transition */
+.panel {
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.panel.minimised {
+  max-height: 50px; /* just enough for header */
+  padding-bottom: 8px;
+}
+
+/* Prominent toggle button at the start */
+.panel-toggle {
+  background: var(--accent2);
+  border: none;
+  color: #000;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-right: 8px;
+}
+.panel h2 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Full height alignment - panel matches spinner height */
+.wrap {
+  align-items: start; /* grid children align at top */
+}
+
+/* Keep panel full height */
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Panel header always visible */
+.panel h2 {
+  display: flex;
+  align-items: center;
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+/* Toggle button prominent */
+.panel-toggle {
+  background: var(--accent2);
+  border: none;
+  color: #000;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-right: 8px;
+}
+
+/* Hide only content when minimised */
+.panel.minimised .panel-content {
+  display: none;
+}
+
+/* Align Add buttons with text inputs */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: stretch; /* stretch both input and button to same height */
+}
+.btn.small {
+  padding: 0 14px; /* remove vertical padding, match input height */
+  font-size: 13px;
+  height: auto; /* let align-items: stretch control height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Match Add button height to input height */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: end; /* keep bottoms aligned */
+}
+.btn.small {
+  height: 42px; /* match the actual input height */
+  padding: 0 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <section>
-      <h1>Decision Spinner: Beat Free Time Paralysis!</h1>
-      <p class="subtitle">Spin to pick tonight’s vibe. Categories and items are fully yours — saved on this device.</p>
-
-      <!-- can't decide on a header -->
-      <div class="machine" aria-label="Slot machine cabinet">
-        <div class="marquee">
-          <div class="marquee-title"></div>
-          <div class="marquee-lights" aria-hidden="true">
-            <div class="light"></div><div class="light"></div><div class="light"></div>
-          </div>
-        </div>
-
-        <div class="cabinet" id="cabinet">
-          <div class="reels">
-            <div class="reel" data-index="0">
-              <div class="reel-window">
-                <div class="symbol" aria-hidden="true">🍒</div>
-                <div class="final-card" aria-live="polite">
-                  <div class="category-pill">Category</div>
-                  <div class="item-text">Item</div>
-                </div>
-              </div>
-            </div>
-            <div class="reel" data-index="1">
-              <div class="reel-window">
-                <div class="symbol" aria-hidden="true">🍋</div>
-                <div class="final-card" aria-live="polite">
-                  <div class="category-pill">Category</div>
-                  <div class="item-text">Item</div>
-                </div>
-              </div>
-            </div>
-            <div class="reel" data-index="2">
-              <div class="reel-window">
-                <div class="symbol" aria-hidden="true">🍉</div>
-                <div class="final-card" aria-live="polite">
-                  <div class="category-pill">Category</div>
-                  <div class="item-text">Item</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="controls">
-            <button id="spinBtn" class="btn" aria-label="Spin the reels">SPIN</button>
-            <button id="clearWinsBtn" class="btn small" aria-label="Clear selections">CLEAR</button>
-          </div>
-
-          <div id="status" class="status lose">Ready to spin.</div>
-          <div id="spinTip" class="muted"></div>
-        </div>
-      </div>
-
-      <div class="help">
+<div class="wrap">
+<section>
+<h1>Decision Spinner: Beat Free Time Paralysis!</h1>
+<p class="subtitle">Spin to pick tonight’s vibe. Categories and items are fully yours — saved on this device.</p>
+<!-- can't decide on a header -->
+<div aria-label="Slot machine cabinet" class="machine">
+<div class="marquee">
+<div class="marquee-title"></div>
+<div aria-hidden="true" class="marquee-lights">
+<div class="light"></div><div class="light"></div><div class="light"></div>
+</div>
+</div>
+<div class="cabinet" id="cabinet">
+<div class="reels">
+<div class="reel" data-index="0">
+<div class="reel-window">
+<div aria-hidden="true" class="symbol">🍒</div>
+<div aria-live="polite" class="final-card">
+<div class="category-pill">Category</div>
+<div class="item-text">Item</div>
+</div>
+</div>
+</div>
+<div class="reel" data-index="1">
+<div class="reel-window">
+<div aria-hidden="true" class="symbol">🍋</div>
+<div aria-live="polite" class="final-card">
+<div class="category-pill">Category</div>
+<div class="item-text">Item</div>
+</div>
+</div>
+</div>
+<div class="reel" data-index="2">
+<div class="reel-window">
+<div aria-hidden="true" class="symbol">🍉</div>
+<div aria-live="polite" class="final-card">
+<div class="category-pill">Category</div>
+<div class="item-text">Item</div>
+</div>
+</div>
+</div>
+</div>
+<div class="controls">
+<button aria-label="Spin the reels" class="btn" id="spinBtn">SPIN</button>
+<button aria-label="Clear selections" class="btn small" id="clearWinsBtn">CLEAR</button>
+</div>
+<div class="status lose" id="status">Ready to spin.</div>
+<div class="muted" id="spinTip"></div>
+</div>
+</div>
+<div class="help">
         - Win condition: all three reels land on the same category.<br/>
         - Works offline. All data stays in your browser’s localStorage on this device.
       </div>
-    </section>
-
-    <aside class="panel" aria-label="Category and item manager">
-      <h2>Manage categories & items</h2>
-
-      <div class="grid-2">
-        <div>
-          <label for="categorySelect">Selected category</label>
-        <select id="categorySelect" aria-label="Category select"></select>
-        </div>
-        <div class="pair">
-          <div>
-            <label for="newCategory">Add category</label>
-            <input type="text" id="newCategory" placeholder="e.g., Podcasts" />
-          </div>
-          <button id="addCategoryBtn" class="btn small" aria-label="Add category">Add</button>
-        </div>
-      </div>
-
-      <div class="pill-row" id="categoryPills"></div>
-      <div class="tip">Tip: Removing a category deletes its items.</div>
-
-      <div class="divider"></div>
-
-      <div class="pair">
-        <div>
-          <label for="newItem">Add item to selected</label>
-          <input type="text" id="newItem" placeholder="Type an item and press Enter or Add" />
-        </div>
-        <button id="addItemBtn" class="btn small" aria-label="Add item">Add</button>
-      </div>
-
-      <div class="item-list" id="itemList" aria-live="polite"></div>
-    </aside>
-  </div>
-
+</section>
+<aside aria-label="Category and item manager" class="panel"><h2><button class="panel-toggle" id="togglePanelBtn">[–]</button>Manage categories &amp; items</h2><div class="panel-content">
+<div class="grid-2">
+<div>
+<label for="categorySelect">Selected category</label>
+<select aria-label="Category select" id="categorySelect"></select>
+</div>
+<div class="pair">
+<div>
+<label for="newCategory">Add category</label>
+<input id="newCategory" placeholder="e.g., Podcasts" type="text"/>
+</div>
+<button aria-label="Add category" class="btn small" id="addCategoryBtn">Add</button>
+</div>
+</div>
+<div class="pill-row" id="categoryPills"></div>
+<div class="tip">Tip: Removing a category deletes its items.</div>
+<div class="divider"></div>
+<div class="pair">
+<div>
+<label for="newItem">Add item to selected</label>
+<input id="newItem" placeholder="Type an item and press Enter or Add" type="text"/>
+</div>
+<button aria-label="Add item" class="btn small" id="addItemBtn">Add</button>
+</div>
+<div aria-live="polite" class="item-list" id="itemList"></div>
+</div></aside>
+</div>
 <script>
 (() => {
   'use strict';
@@ -802,8 +918,21 @@
   load();
   renderAll();
   ensureSpinState();
+
+  
+  
+  // Panel minimiser logic (full-height alignment)
+  const panel = document.querySelector('.panel');
+  const toggleBtn = document.getElementById('togglePanelBtn');
+
+  toggleBtn.addEventListener('click', () => {
+    panel.classList.toggle('minimised');
+    toggleBtn.textContent = panel.classList.contains('minimised') ? '[+]' : '[–]';
+  });
+
+
+
 })();
 </script>
 </body>
-
 </html>
