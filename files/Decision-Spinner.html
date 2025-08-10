@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Decision Spinner: Beat Free Time Paralysis!</title>
+<style>
+  :root{
+    --bg1:#0e031b;
+    --bg2:#1a0b33;
+    --accent:#ffcc33;
+    --accent2:#30e0ff;
+    --accent3:#ff4dd2;
+    --panel:#1f1637;
+    --panel-2:#281c4a;
+    --panel-3:#0c0620;
+    --glass:#2e2350;
+    --white:#f7f7fb;
+    --muted:#bcb3d9;
+    --success:#48f087;
+    --danger:#ff5a5a;
+    --warning:#ffd166;
+    --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height:100%; }
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    color: var(--white);
+    background:
+      radial-gradient(1000px 600px at 50% -100px, #3f1f93 0%, transparent 60%),
+      radial-gradient(900px 500px at 90% 120%, #1f7393 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg1), var(--bg2));
+    overflow-x:hidden;
+  }
+
+  .wrap{
+    max-width: 1100px;
+    margin: 32px auto 64px;
+    padding: 0 16px;
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 24px;
+  }
+  @media (max-width: 980px){
+    .wrap{ grid-template-columns: 1fr; }
+  }
+
+  h1{
+    font-weight: 800;
+    letter-spacing: .3px;
+    margin: 0 0 8px;
+    text-shadow: 0 2px 20px rgba(255,255,255,.08);
+  }
+  .subtitle{
+    margin: 0 0 24px;
+    color: var(--muted);
+  }
+
+  /* Machine */
+  .machine{
+    position: relative;
+    background: linear-gradient(180deg, #3b256f, #251a44 45%, #1b1433 100%);
+    border-radius: 18px;
+    box-shadow:
+      0 35px 80px rgba(0,0,0,.55),
+      inset 0 0 0 2px rgba(255,255,255,.06),
+      inset 0 80px 120px rgba(255,255,255,.06);
+    padding: 20px 16px 18px;
+    perspective: 1200px;
+  }
+  .marquee{
+    background: linear-gradient(180deg, #492588, #2a1f56);
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.06),
+      0 8px 30px rgba(0,0,0,.35);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .marquee-title{
+    font-weight: 900;
+    letter-spacing: 1px;
+    font-size: 18px;
+  }
+  .marquee-lights{
+    display:flex; gap:8px; margin-left:auto;
+  }
+  .light{
+    width:10px; height:10px; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, #fff, #ffe27a 35%, #b97e00 70%);
+    box-shadow: 0 0 8px rgba(255,204,51,.9), 0 0 20px rgba(255,204,51,.6);
+    opacity:.75; animation: twinkle 1.8s infinite ease-in-out;
+  }
+  .light:nth-child(2){ animation-delay: .3s }
+  .light:nth-child(3){ animation-delay: .6s }
+  @keyframes twinkle { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+  .cabinet{
+    margin-top:14px;
+    background: linear-gradient(180deg, #2d1f54, #1a1231 60%, #140e27);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.05),
+      inset 0 50px 120px rgba(255,255,255,.06),
+      0 20px 60px rgba(0,0,0,.5);
+    transform: rotateX(2deg);
+    transition: box-shadow .3s ease, outline-color .3s ease;
+    outline: 2px solid transparent;
+  }
+  .cabinet.win{
+    outline-color: var(--accent);
+    box-shadow:
+      0 20px 80px rgba(0,0,0,.55),
+      0 0 40px rgba(255,204,51,.35),
+      inset 0 0 0 2px rgba(255,255,255,.08),
+      inset 0 70px 160px rgba(255,255,255,.08);
+  }
+
+  .reels{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .reel{
+    background: linear-gradient(180deg, #140e23, #100a1d);
+    border-radius: 12px;
+    padding: 10px;
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+  .reel-window{
+    height: 140px;
+    background: linear-gradient(180deg, #16112b 0%, #130d25 100%);
+    border-radius: 10px;
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.06),
+      inset 0 40px 80px rgba(255,255,255,.04),
+      0 10px 20px rgba(0,0,0,.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+  @media (max-width: 420px){
+    .reel-window{ height: 120px; }
+  }
+
+  .symbol{
+    font-size: 56px;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.4));
+    transform: translateZ(0);
+    transition: transform .08s ease;
+  }
+  .reel.stopping .symbol{ transform: scale(.96) translateY(2px); }
+
+  .final-card{
+    position:absolute;
+    inset: 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding: 10px;
+    text-align:center;
+    opacity:0;
+    transform: translateY(12px) scale(.98);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .reel.stopped .final-card{
+    opacity:1; transform: translateY(0) scale(1);
+  }
+  .category-pill{
+    font-size: clamp(9px, 1.9vw, 11px);
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    color: #101010;
+    background: #ffd166;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    max-width: 92%;
+    text-align: center;
+    line-height: 1.2;
+    white-space: normal;       /* allow wrap for long names */
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .item-text{
+    font-size: clamp(12px, 2.4vw, 14px);
+    color: var(--white);
+    line-height: 1.25;
+    max-width: 96%;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(0,0,0,.3);
+  }
+
+  .controls{
+    display:flex; 
+    gap: 12px; 
+    align-items:center; 
+    justify-content:center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .btn{
+    appearance:none; border:0; cursor:pointer;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight:800; letter-spacing:.4px;
+    color:#1a1333;
+    background: linear-gradient(180deg, #ffe17c, #ffcc33);
+    transition: transform .06s ease, filter .15s ease, box-shadow .2s ease;
+    box-shadow: none; /* removed glow */
+  }
+  .btn:hover{ filter: brightness(1.05); }
+  .btn:active{ transform: translateY(1px); }
+  .btn[disabled]{
+    opacity:.6; cursor:not-allowed; filter: grayscale(.25);
+  }
+
+  .small{
+    background: linear-gradient(180deg, #6ae1ff, #31c4e8);
+    color:#07131a;
+    box-shadow: none; /* removed glow */
+  }
+  .muted{
+    color: var(--muted);
+    font-size: 13px;
+    text-align:center;
+    margin-top: 8px;
+  }
+
+  .status{
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: linear-gradient(180deg, #1a1333, #140f28);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    text-align:center;
+    font-weight: 700;
+    letter-spacing:.3px;
+  }
+  .status.win{
+    color: var(--success);
+    text-shadow: 0 0 8px rgba(72,240,135,.3);
+  }
+  .status.lose{ color: var(--muted); }
+
+  /* Manager panel */
+  .panel{
+    background: linear-gradient(180deg, #2b1f50, #1a1231);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.05),
+      0 20px 50px rgba(0,0,0,.4);
+  }
+  .panel h2{
+    margin: 0 0 12px;
+  }
+  label{ font-size: 13px; color: var(--muted); display:block; margin-bottom:6px; }
+  .row{ display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+
+  select, input[type="text"]{
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #3d2f66;
+    background: #ffffff;
+    color: #111;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,.08), inset 0 0 0 1px rgba(0,0,0,.03);
+  }
+  select:focus, input[type="text"]:focus{
+    border-color: #7e6ad8;
+    box-shadow: 0 0 0 3px rgba(126,106,216,.25);
+  }
+  .pair{ display:grid; grid-template-columns: 1fr auto; gap:10px; }
+  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width:600px){ .grid-2{ grid-template-columns: 1fr; } }
+
+  .item-list{
+    margin-top: 10px;
+    max-height: 250px;
+    overflow:auto;
+    padding-right: 4px;
+  }
+  .item{
+    display:flex; align-items:center; gap:10px;
+    background: linear-gradient(180deg, #1a1430, #161028);
+    padding: 10px 10px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    margin-bottom: 8px;
+  }
+  .item span[contenteditable]{
+    flex:1; outline:none;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background .15s ease, box-shadow .15s ease;
+  }
+  .item span[contenteditable]:focus{
+    background:#241a44;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+  }
+  .icon-btn{
+    appearance:none; border:0; cursor:pointer;
+    width:34px; height:34px; border-radius:8px;
+    display:grid; place-items:center;
+    background: linear-gradient(180deg, #ff7a7a, #ff5a5a);
+    color:#270808; font-weight:900;
+    box-shadow: 0 6px 16px rgba(255,90,90,.3), inset 0 -2px 0 rgba(0,0,0,.15);
+  }
+  .icon-btn.edit{
+    background: linear-gradient(180deg, #6ae1ff, #31c4e8);
+    color:#07131a;
+  }
+  .pill-row{
+    display:flex; gap: 8px; flex-wrap:wrap; margin-top: 10px;
+  }
+  .pill{
+    padding: 6px 10px; border-radius: 999px;
+    background:#301c60; color: var(--white); font-size:12px; font-weight:700;
+    border:1px solid #4a378a;
+    display:flex; gap:8px; align-items:center;
+  }
+  .pill button{
+    appearance:none; border:0; cursor:pointer;
+    background: transparent; color: var(--muted);
+    font-weight:900; padding: 0 2px;
+  }
+  .tip{ font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  .divider{ height:1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); margin: 12px 0; }
+
+  .help{
+    margin-top: 10px; font-size: 12px; line-height:1.35; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section>
+      <h1>Decision Spinner: Beat Free Time Paralysis!</h1>
+      <p class="subtitle">Spin to pick tonight’s vibe. Categories and items are fully yours — saved on this device.</p>
+
+      <!-- can't decide on a header -->
+      <div class="machine" aria-label="Slot machine cabinet">
+        <div class="marquee">
+          <div class="marquee-title"></div>
+          <div class="marquee-lights" aria-hidden="true">
+            <div class="light"></div><div class="light"></div><div class="light"></div>
+          </div>
+        </div>
+
+        <div class="cabinet" id="cabinet">
+          <div class="reels">
+            <div class="reel" data-index="0">
+              <div class="reel-window">
+                <div class="symbol" aria-hidden="true">🍒</div>
+                <div class="final-card" aria-live="polite">
+                  <div class="category-pill">Category</div>
+                  <div class="item-text">Item</div>
+                </div>
+              </div>
+            </div>
+            <div class="reel" data-index="1">
+              <div class="reel-window">
+                <div class="symbol" aria-hidden="true">🍋</div>
+                <div class="final-card" aria-live="polite">
+                  <div class="category-pill">Category</div>
+                  <div class="item-text">Item</div>
+                </div>
+              </div>
+            </div>
+            <div class="reel" data-index="2">
+              <div class="reel-window">
+                <div class="symbol" aria-hidden="true">🍉</div>
+                <div class="final-card" aria-live="polite">
+                  <div class="category-pill">Category</div>
+                  <div class="item-text">Item</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="spinBtn" class="btn" aria-label="Spin the reels">SPIN</button>
+            <button id="clearWinsBtn" class="btn small" aria-label="Clear selections">CLEAR</button>
+          </div>
+
+          <div id="status" class="status lose">Ready to spin.</div>
+          <div id="spinTip" class="muted"></div>
+        </div>
+      </div>
+
+      <div class="help">
+        - Win condition: all three reels land on the same category.<br/>
+        - Works offline. All data stays in your browser’s localStorage on this device.
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="Category and item manager">
+      <h2>Manage categories & items</h2>
+
+      <div class="grid-2">
+        <div>
+          <label for="categorySelect">Selected category</label>
+        <select id="categorySelect" aria-label="Category select"></select>
+        </div>
+        <div class="pair">
+          <div>
+            <label for="newCategory">Add category</label>
+            <input type="text" id="newCategory" placeholder="e.g., Podcasts" />
+          </div>
+          <button id="addCategoryBtn" class="btn small" aria-label="Add category">Add</button>
+        </div>
+      </div>
+
+      <div class="pill-row" id="categoryPills"></div>
+      <div class="tip">Tip: Removing a category deletes its items.</div>
+
+      <div class="divider"></div>
+
+      <div class="pair">
+        <div>
+          <label for="newItem">Add item to selected</label>
+          <input type="text" id="newItem" placeholder="Type an item and press Enter or Add" />
+        </div>
+        <button id="addItemBtn" class="btn small" aria-label="Add item">Add</button>
+      </div>
+
+      <div class="item-list" id="itemList" aria-live="polite"></div>
+    </aside>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Symbols for reel spin
+  const SYMBOLS = ["🍒","🍋","🍉","🍇","⭐","🔔"];
+  const STORAGE_KEY = 'slot3d_data_v1';
+
+  // Data model
+  let data = {
+    categories: {
+      // seeded on first load if empty
+    }
+  };
+
+  // Seed defaults (with a couple of sample items so you can play immediately)
+  const defaultSeed = {
+    "Books": ["Start a new novel", "Finish a chapter"],
+    "Games": ["Co-op adventure", "Indie puzzler"],
+    "TV Shows": ["Pilot episode", "Next episode"],
+    "Movies": ["Comedy night", "Action thriller"],
+    "Learning Something New": ["A 15-min tutorial", "Try a new recipe"]
+  };
+
+  // Elements
+  const categorySelect = document.getElementById('categorySelect');
+  const categoryPills = document.getElementById('categoryPills');
+  const newCategoryInput = document.getElementById('newCategory');
+  const addCategoryBtn = document.getElementById('addCategoryBtn');
+  const newItemInput = document.getElementById('newItem');
+  const addItemBtn = document.getElementById('addItemBtn');
+  const itemList = document.getElementById('itemList');
+
+  const spinBtn = document.getElementById('spinBtn');
+  const clearWinsBtn = document.getElementById('clearWinsBtn');
+  const statusEl = document.getElementById('status');
+  const tipEl = document.getElementById('spinTip');
+  const cabinet = document.getElementById('cabinet');
+  const reelEls = Array.from(document.querySelectorAll('.reel'));
+
+  // Utility: Save / Load
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch(e) {
+      // Graceful no-op on storage errors
+    }
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        data = JSON.parse(raw);
+      } else {
+        data.categories = JSON.parse(JSON.stringify(defaultSeed));
+        save();
+      }
+    } catch(e) {
+      data.categories = JSON.parse(JSON.stringify(defaultSeed));
+    }
+  }
+
+  // Hash → HSL color for category pills
+  function colorForCategory(name){
+    let h=0;
+    for (let i=0;i<name.length;i++){ h = (h*31 + name.charCodeAt(i))>>>0; }
+    const hue = h % 360;
+    return `hsl(${hue} 85% 65%)`;
+  }
+
+  // Renderers
+  function renderCategorySelect(){
+    const selected = categorySelect.value;
+    categorySelect.innerHTML = '';
+    Object.keys(data.categories).forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      categorySelect.appendChild(opt);
+    });
+    if (selected && data.categories[selected]) {
+      categorySelect.value = selected;
+    }
+  }
+
+  function renderCategoryPills(){
+    categoryPills.innerHTML = '';
+    Object.keys(data.categories).forEach(cat => {
+      const pill = document.createElement('div');
+      pill.className = 'pill';
+      const dot = document.createElement('span');
+      dot.style.width='10px'; dot.style.height='10px'; dot.style.borderRadius='50%';
+      dot.style.display='inline-block'; dot.style.background=colorForCategory(cat);
+      const label = document.createElement('span');
+      label.textContent = cat;
+      const btn = document.createElement('button');
+      btn.setAttribute('aria-label', `Remove category ${cat}`);
+      btn.textContent = '×';
+      btn.addEventListener('click', () => {
+        if (!confirm(`Delete category "}
+
+      });
+    });
+  }
+
+  // Load data on startup
+  load();
+  renderCategorySelect();
+  renderCategoryPills();
+})();
+</script>
+</body>
+</html>
