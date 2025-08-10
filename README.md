@@ -3,3 +3,6 @@ Try Decision Spinner: Beat Free Time Paralysis!
 Spin to pick tonight’s vibe. Categories and items are fully yours — saved on the local device
 
 Save the html file to a convenient location and just run when you can't decide what to do and let lady luck decide for you
+
+
+Also avaliable online https://awalshe.github.io/Decision-Spinner/
